@@ -6,4 +6,4 @@ This is a joint school project for the [Faculty of Mathemathics and Physics Ljub
 
 # How to play
 
-To play a game compile and run `App.java` from `Othello/src/app/`.
+To play a game compile and run `GUITest.java` from `Othello/tests/GUITest/`.
