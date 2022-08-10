@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 import inteligenca.Inteligenca;
+import splosno.Poteza;
 
 public class Game {
 	private Board gameBoard;
@@ -128,6 +129,11 @@ public class Game {
 	
 	public Board getBoard() {
 		return gameBoard;
+	}
+	
+	public boolean odigraj(Poteza p) {
+		Coords c = new Coords(p.getX(), p.getY());
+		return odigraj(c);
 	}
 	
 	public boolean odigraj(Coords c) {
