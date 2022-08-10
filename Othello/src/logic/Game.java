@@ -21,8 +21,8 @@ public class Game {
 	private boolean aiThinking;
 	private boolean asyncMoves = false;
 	
-	public int blackScore;
-	public int whiteScore;
+	private int blackScore;
+	private int whiteScore;
 	
 	public boolean getAiThinking() {
 		return aiThinking;
@@ -34,6 +34,14 @@ public class Game {
 	
 	public Stone getActivePlayer() {
 		return activePlayer;
+	}
+	
+	public int getBlackScore() {
+		return blackScore;
+	}
+	
+	public int getWhiteScore() {
+		return whiteScore;
 	}
 	
 	public Stone getWinner() {
@@ -110,6 +118,14 @@ public class Game {
 		aiThinking = false;
 		
 		endMoveTriggers();
+	}
+	
+	public void reset() {
+		initVars();
+		
+		if (opponent != null && this.opponentColour == activePlayer) {
+			makeAiMove();
+		}
 	}
 	
 	public Game copy() {
@@ -261,14 +277,16 @@ public class Game {
 			final Game g = this;
 			
 			SwingWorker<Void, Void> worker = new SwingWorker<Void, Void> () {			
+				Coords move = null;
+				
 				@Override
 				protected Void doInBackground() {
+					move = opponent.getMove(g);
 					return null;
 				}
 				
 				@Override
 				protected void done () {
-					Coords move = opponent.getMove(g);
 					odigraj(move);
 					
 					aiThinking = false;
