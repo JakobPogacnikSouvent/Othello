@@ -23,11 +23,17 @@ public class Inteligenca extends KdoIgra {
 	private Coords getMCTSMove(Game game) {
 		Tree root = new Tree(game.copy());
 		
-		for (int i = 0; i < 1000; i++) {
-			root.cycle();			
+		final int THINKING_TIME = 2000;
+		
+		long startTime = System.currentTimeMillis();
+		long currTime = startTime;
+		
+		while (currTime < startTime + THINKING_TIME) {
+			root.cycle();
+			currTime = System.currentTimeMillis();
 		}
 		
-		// System.out.println(root.getnOfWins() + " / " + root.getnOfSimulations());
+		System.out.println(root.getnOfWins() + " / " + root.getnOfSimulations());
 		
 		return root.getBestMove();
 	}
