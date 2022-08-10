@@ -24,7 +24,7 @@ public class StartScreen extends JFrame implements ActionListener, WindowListene
 	
 	public StartScreen() {
 		super();
-		setTitle("Chess 2");
+		setTitle("Othello 1.2");
 		
 		// Glavna ploÅ¡Ä�a
 		JPanel glavnaPlosca = new JPanel();
@@ -47,6 +47,32 @@ public class StartScreen extends JFrame implements ActionListener, WindowListene
 		orodjarna.add(exit);
 		
 		glavnaPlosca.add(orodjarna);
+		
+		
+		
+//		JMenuBar menubar = new JMenuBar();
+//		setJMenuBar(menubar);
+//		
+//		JMenu menuDatoteka = dodajMenu(menubar, "Datoteka");
+//		JMenu menuGraf = dodajMenu(menubar, "Graf");
+//		JMenu menuNastavitve = dodajMenu(menubar, "Nastavitve");
+//		
+//		menuOdpri = dodajMenuItem(menuDatoteka, "Odpri ...");
+//		menuShrani = dodajMenuItem(menuDatoteka, "Shrani ...");
+//		menuKoncaj = dodajMenuItem(menuDatoteka, "KonÄ�aj");
+//		menuPrazen = dodajMenuItem(menuGraf, "Prazen ...");
+//		menuCikel = dodajMenuItem(menuGraf, "Cikel ...");
+//		menuPoln = dodajMenuItem(menuGraf, "Poln ...");
+//		menuPolnDvodelen = dodajMenuItem(menuGraf, "Poln dvodelen ...");
+//		menuBarvaPovezave = dodajMenuItem(menuNastavitve, "Barva povezave ...");
+//		menuBarvaTocke = dodajMenuItem(menuNastavitve, "Barva toÄ�ke ...");
+//		menuBarvaAktivneTocke = dodajMenuItem(menuNastavitve, "Barva aktivne toÄ�ke ...");
+//		menuBarvaIzbraneTocke = dodajMenuItem(menuNastavitve, "Barva izbrane toÄ�ke ...");
+//		menuBarvaRoba = dodajMenuItem(menuNastavitve, "Barva roba ...");
+//		menuDebelinaRoba = dodajMenuItem(menuNastavitve, "Debelina roba ...");
+//		menuDebelinaPovezave = dodajMenuItem(menuNastavitve, "Debelina povezave ...");
+//		
+//		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	
@@ -70,14 +96,14 @@ public class StartScreen extends JFrame implements ActionListener, WindowListene
 		     
 			int playerChoice = JOptionPane.showOptionDialog(null, "Choose your colour:", "Player colour", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 		      
-		      switch (playerChoice) {
-		      case 0 :
-		    	  aiColour = Stone.WHITE;
-		    	  break;
-		      case 1:
-		    	  aiColour = Stone.BLACK;
-		    	  break;
-		      }
+		    switch (playerChoice) {
+		    case 0 :
+		    	aiColour = Stone.WHITE;
+		    	break;
+		    case 1:
+		    	aiColour = Stone.BLACK;
+		    	break;
+		    }
 
 			
 			gameWindow = new GameWindow(new Inteligenca("Carlos"), aiColour);

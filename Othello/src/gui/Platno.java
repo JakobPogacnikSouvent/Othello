@@ -2,8 +2,11 @@ package gui;
 
 import javax.swing.JPanel;
 
+import inteligenca.Inteligenca;
 import logic.Coords;
 import logic.Game;
+import logic.GameStatus;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,15 +14,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.event.*;
-import javax.swing.Timer;
 
 
 @SuppressWarnings("serial") 
-public class Platno extends JPanel implements MouseListener, MouseMotionListener, KeyListener, ActionListener {
+public class Platno extends JPanel implements MouseListener, MouseMotionListener, KeyListener {
 	
-	public Game game;
+	private Game game;
 
-	public Color squareColourPrimary, squareColourSecondary, figureColourWhite, figureBorderWhite, figureColourBlack, figureBorderBlack;
+	private Color squareColourPrimary, squareColourSecondary, figureColourWhite, figureBorderWhite, figureColourBlack, figureBorderBlack;
 	private Stroke edgeSize;
 	
 	private Coords boardZeroVector;
@@ -27,14 +29,48 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 	private Coords mouseHoverSquare;
 			
 	private int fullWidth, fullHeight, boardSize, squareSize, stoneSize, offset;
+		
+	private GameWindow parent;
 	
-	Timer timer;
-
+	public Color getSquareColourPrimary() {
+		return squareColourPrimary;
+	}
 	
-	public Platno(int sirina, int visina) {
+	public void setSquareColourPrimary(Color c) {
+		squareColourPrimary = c;
+	}
+	
+	
+	public Color getSquareColourSecondary() {
+		return squareColourSecondary;
+	}
+	
+	public void setSquareColourSecondary(Color c) {
+		squareColourSecondary = c;
+	}
+	
+	public Color getFigureColourWhite() {
+		return figureColourWhite;
+	}
+	
+	public void setFigureColourWhite(Color c) {
+		figureColourWhite = c;
+	}
+	
+	public Color getFigureColourBlack() {
+		return figureColourBlack;
+	}
+	
+	public void setFigureColourBlack(Color c) {
+		figureColourBlack = c;
+	}
+	
+	public Platno(int sirina, int visina, GameWindow parent) {
 		super();
 		setPreferredSize(new Dimension(sirina, visina));
-
+		
+		this.parent = parent;
+		
 		game = null;
 		
 		squareColourPrimary = new Color(17, 59, 8);
@@ -56,13 +92,15 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		addKeyListener(this);
 		setFocusable(true);
 		
-		timer = new Timer(1000, this);
-		timer.start();
 	}
 	
 	public void setGame(Game g) {
 		game = g;
 		repaint();
+	}
+	
+	public Game getGame() {
+		return game;
 	}
 	
 	public void setWindowVars() {
@@ -147,6 +185,7 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 			g2.setColor(Color.blue);
 			g2.fillOval(squareZeroVector.x + offset,squareZeroVector.y  + offset, stoneSize, stoneSize);
 		}
+		
 	}
 	
 	@Override
@@ -157,6 +196,14 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		if (game == null) return;
+		
+		char key = e.getKeyChar();
+		if (key == 'r' && !game.getAiThinking() && game.getStatus() == GameStatus.ONGOING) {
+			game.odigraj(Inteligenca.getRandomMove(game));
+			parent.update();
+			repaint();
+		}
 	}
 
 	@Override
@@ -197,6 +244,10 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 	public void mousePressed(MouseEvent e) {
 		if (!game.getAiThinking()) {			
 			game.odigraj(mouseHoverSquare); // mouseHoverSquare should be same as pressed square
+			
+			parent.update();				
+//			if (game.getStatus() == GameStatus.ONGOING) {
+//			}
 			repaint();
 		}
 	}
@@ -219,12 +270,5 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		if (e.getSource() == timer) {
-			repaint();
-		}
-	}
 	
 }
