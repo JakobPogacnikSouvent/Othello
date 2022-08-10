@@ -33,7 +33,7 @@ public class GameWindow extends JFrame implements ActionListener {
 		glavnaPlosca.add(platno);
 		
 		if (ai != null) {
-			platno.setGame(new Game(ai, aiColour));			
+			platno.setGame(new Game(ai, aiColour, true));			
 		} else {
 			platno.setGame(new Game());
 		}

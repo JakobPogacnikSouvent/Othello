@@ -4,8 +4,6 @@ import javax.swing.JPanel;
 
 import logic.Coords;
 import logic.Game;
-import logic.GameStatus;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -14,8 +12,6 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.event.*;
 import javax.swing.Timer;
-
-import inteligenca.Inteligenca;
 
 
 @SuppressWarnings("serial") 
@@ -177,11 +173,11 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		if (!game.getAiThinking() && game.getStatus() == GameStatus.ONGOING) {
-			game.odigraj(Inteligenca.getRandomMove(game));
-		} else if (game.getStatus() == GameStatus.FINISHED){
-			System.out.println(game.getWinner());
-		}
+//		if (!game.getAiThinking() && game.getStatus() == GameStatus.ONGOING) {
+//			game.odigraj(Inteligenca.getRandomMove(game));
+//		} else if (game.getStatus() == GameStatus.FINISHED){
+//			System.out.println(game.getWinner());
+//		}
 		
 		Coords mouseSquare = Coords.subtract(new Coords(e.getX(), e.getY()), boardZeroVector).divide(squareSize);
 		
