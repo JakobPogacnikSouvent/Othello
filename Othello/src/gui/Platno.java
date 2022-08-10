@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.*;
 
@@ -124,6 +125,7 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setStroke(edgeSize);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		// Paint squares
 		for (int i = 0; i < 8; i++) {
