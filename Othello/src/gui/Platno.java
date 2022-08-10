@@ -17,9 +17,9 @@ import javax.swing.Timer;
 @SuppressWarnings("serial") 
 public class Platno extends JPanel implements MouseListener, MouseMotionListener, KeyListener, ActionListener {
 	
-	private Game game;
+	public Game game;
 
-	private Color squareColourPrimary, squareColourSecondary, figureColourWhite, figureBorderWhite, figureColourBlack, figureBorderBlack;
+	public Color squareColourPrimary, squareColourSecondary, figureColourWhite, figureBorderWhite, figureColourBlack, figureBorderBlack;
 	private Stroke edgeSize;
 	
 	private Coords boardZeroVector;
@@ -147,7 +147,6 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 			g2.setColor(Color.blue);
 			g2.fillOval(squareZeroVector.x + offset,squareZeroVector.y  + offset, stoneSize, stoneSize);
 		}
-		
 	}
 	
 	@Override

@@ -6,30 +6,53 @@ import inteligenca.Inteligenca;
 import logic.Game;
 import logic.Stone;
 
+import java.awt.Color;
 import java.awt.event.*;
 
 @SuppressWarnings("serial")
 public class GameWindow extends JFrame implements ActionListener {
 	
 	protected Platno platno;
-	private JMenuItem menuOdpri, menuShrani, menuKoncaj;
-	private JMenuItem menuPrazen, menuCikel, menuPoln, menuPolnDvodelen;
-	private JMenuItem menuBarvaPovezave, menuBarvaTocke, menuBarvaAktivneTocke, menuBarvaIzbraneTocke, menuBarvaRoba;
-	private JMenuItem menuDebelinaRoba, menuDebelinaPovezave;
+
+	private JLabel status;
+	private JLabel rezPrimary, rezSecondary;
+	
+	private JMenuItem menuBarvaIgralecEna, menuBarvaIgralecDve, menuBarvaPolja;
 	
 	public GameWindow(Inteligenca ai, Stone aiColour) {
 		super();
-		setTitle("Othello 1.2");
-		platno = new Platno(800, 800);
-		add(platno);
+		setTitle("Othello 2");
 		
-		// Glavna plošča
+		// Ureditev orodne vrstice
+		JMenuBar menubar = new JMenuBar();
+		setJMenuBar(menubar);
+		
+		JMenu menuNastavitve = dodajMenu(menubar, "Nastavitve");
+		
+		menuBarvaIgralecEna = dodajItem(menuNastavitve, "Nastavi barvo prvega igralca.");
+		menuBarvaIgralecDve = dodajItem(menuNastavitve, "Nastavi barvo drugega igralca.");
+		menuBarvaPolja = dodajItem(menuNastavitve, "Nastavi barvo polj.");
+		
+		// Glavna ploÅ¡Ä�a
 		JPanel glavnaPlosca = new JPanel();
 		glavnaPlosca.setLayout(new BoxLayout(glavnaPlosca, BoxLayout.Y_AXIS));
 		this.add(glavnaPlosca);
 		
+		//===========================================================================
+		
+		// JPanel, ki je nad igralnim poljem
+		JPanel strop = new JPanel();
+		
+		// Sporočilo na stropu
+		status = new JLabel();
+		strop.add(status);
+		
+		glavnaPlosca.add(strop);
+		
+		//===========================================================================
+		
 		// Igralno polje
-		platno = new Platno(800, 800);
+		platno = new Platno(600, 600);
 		glavnaPlosca.add(platno);
 		
 		if (ai != null) {
@@ -38,31 +61,30 @@ public class GameWindow extends JFrame implements ActionListener {
 			platno.setGame(new Game());
 		}
 		
-		platno.repaint();
+		//===========================================================================
 		
-//		JMenuBar menubar = new JMenuBar();
-//		setJMenuBar(menubar);
-//		
-//		JMenu menuDatoteka = dodajMenu(menubar, "Datoteka");
-//		JMenu menuGraf = dodajMenu(menubar, "Graf");
-//		JMenu menuNastavitve = dodajMenu(menubar, "Nastavitve");
-//		
-//		menuOdpri = dodajMenuItem(menuDatoteka, "Odpri ...");
-//		menuShrani = dodajMenuItem(menuDatoteka, "Shrani ...");
-//		menuKoncaj = dodajMenuItem(menuDatoteka, "Končaj");
-//		menuPrazen = dodajMenuItem(menuGraf, "Prazen ...");
-//		menuCikel = dodajMenuItem(menuGraf, "Cikel ...");
-//		menuPoln = dodajMenuItem(menuGraf, "Poln ...");
-//		menuPolnDvodelen = dodajMenuItem(menuGraf, "Poln dvodelen ...");
-//		menuBarvaPovezave = dodajMenuItem(menuNastavitve, "Barva povezave ...");
-//		menuBarvaTocke = dodajMenuItem(menuNastavitve, "Barva točke ...");
-//		menuBarvaAktivneTocke = dodajMenuItem(menuNastavitve, "Barva aktivne točke ...");
-//		menuBarvaIzbraneTocke = dodajMenuItem(menuNastavitve, "Barva izbrane točke ...");
-//		menuBarvaRoba = dodajMenuItem(menuNastavitve, "Barva roba ...");
-//		menuDebelinaRoba = dodajMenuItem(menuNastavitve, "Debelina roba ...");
-//		menuDebelinaPovezave = dodajMenuItem(menuNastavitve, "Debelina povezave ...");
-//		
-//		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// JPanel, ki je pod igralnim poljem
+		JPanel temelj = new JPanel();
+		
+		// Števec točk
+		rezPrimary = new JLabel();
+		rezPrimary.setBackground(platno.squareColourPrimary);
+		rezPrimary.setForeground(Color.BLACK);
+		rezPrimary.setOpaque(true);
+		rezSecondary = new JLabel();
+		rezSecondary.setBackground(platno.squareColourSecondary);
+		rezSecondary.setForeground(Color.WHITE);
+		rezSecondary.setOpaque(true);
+		temelj.add(rezPrimary);
+		temelj.add(rezSecondary);
+		
+		glavnaPlosca.add(temelj);
+		
+		status.setText("Pozdravljeni!");
+		rezPrimary.setText(String.valueOf(platno.game.blackScore));
+		rezSecondary.setText(String.valueOf(platno.game.whiteScore));
+		
+		platno.repaint();
 	}
 	
 	private JMenu dodajMenu(JMenuBar menubar, String naslov) {
@@ -71,65 +93,40 @@ public class GameWindow extends JFrame implements ActionListener {
 		return menu;
 	}
 
-	private JMenuItem dodajMenuItem(JMenu menu, String naslov) {
+	private JMenuItem dodajItem(JMenu menu, String naslov) {
 		JMenuItem menuItem = new JMenuItem(naslov);
 		menu.add(menuItem);
 		menuItem.addActionListener(this);
 		return menuItem;		
 	}
 	
+	public static void updateMessages() {
+		
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-//		Object source = e.getSource();
-//		if (source == menuOdpri) {
-//			JFileChooser dialog = new JFileChooser();
-//			int izbira = dialog.showOpenDialog(this);
-//			if (izbira == JFileChooser.APPROVE_OPTION) {
-//				String ime = dialog.getSelectedFile().getPath();
-//				Graf graf = Graf.preberi(ime);
-//				platno.nastaviGraf(graf);
-//			}
-//		} else if (source == menuShrani) {
-//			JFileChooser dialog = new JFileChooser();
-//			int izbira = dialog.showSaveDialog(this);
-//			if (izbira == JFileChooser.APPROVE_OPTION) {
-//				String ime = dialog.getSelectedFile().getPath();
-//				platno.graf.shrani(ime);
-//			}
-//		} else if (source == menuKoncaj) {
-//			dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-//		} else if (source == menuPrazen) {
-//			String steviloTock = JOptionPane.showInputDialog(this, "Število točk:");
-//			if (steviloTock != null && steviloTock.matches("\\d+")) {
-//				Graf g = Graf.prazen(Integer.parseInt(steviloTock));
-//				g.razporedi(400, 400, 300);
-//				platno.nastaviGraf(g);
-//			}
-//		} else if (source == menuCikel) {
-//		} else if (source == menuPoln) {
-//		} else if (source == menuPolnDvodelen) {
-//			JTextField nn = new JTextField();
-//			JTextField mm = new JTextField();
-//			JComponent[] polja = {
-//				new JLabel("Vnesi N:"), nn,	
-//				new JLabel("Vnesi M:"), mm	
-//			};
-//			int izbira = JOptionPane.showConfirmDialog(this, polja, "Input", JOptionPane.OK_CANCEL_OPTION);
-//			if (izbira == JOptionPane.OK_OPTION && nn.getText().matches("\\d+") && mm.getText().matches("\\d+")) {
-//				Graf g = Graf.polnDvodelen(Integer.parseInt(nn.getText()), Integer.parseInt(mm.getText()));
-//				g.razporedi(400, 400, 300);
-//				platno.nastaviGraf(g);	
-//			}
-//		} else if (source == menuBarvaPovezave) {
-//		} else if (source == menuBarvaTocke) {
-//		} else if (source == menuBarvaAktivneTocke) {
-//		} else if (source == menuBarvaIzbraneTocke) {
-//		} else if (source == menuBarvaRoba) {
-//		} else if (source == menuDebelinaRoba) {
-//		} else if (source == menuDebelinaPovezave) {
-//		}
-//		
+		Object source = e.getSource();
+		if (source == menuBarvaIgralecEna) {
+			Color izbira = JColorChooser.showDialog(this, "Barva kamenčkov prvega igralca", platno.figureColourBlack);
+			if (izbira == null) return;
+			platno.figureColourBlack = izbira;
+			platno.repaint();
+		}
+		else if (source == menuBarvaIgralecDve) {
+			Color izbira = JColorChooser.showDialog(this, "Barva kamenčkov drugega igralca", platno.figureColourWhite);
+			if (izbira == null) return;
+			platno.figureColourWhite = izbira;
+			platno.repaint();
+		}
+		else if (source == menuBarvaPolja) {
+			Color izbira = JColorChooser.showDialog(this, "Barva igralnih polj", platno.squareColourPrimary);
+			if (izbira == null) return;
+			platno.squareColourPrimary = izbira;
+			Color darker = izbira.darker();
+			platno.squareColourSecondary = darker;
+			platno.repaint();
+		}
 	}
 	
 }

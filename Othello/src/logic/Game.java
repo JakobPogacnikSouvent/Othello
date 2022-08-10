@@ -21,8 +21,8 @@ public class Game {
 	private boolean aiThinking;
 	private boolean asyncMoves = false;
 	
-	private int blackScore;
-	private int whiteScore;
+	public int blackScore;
+	public int whiteScore;
 	
 	public boolean getAiThinking() {
 		return aiThinking;
