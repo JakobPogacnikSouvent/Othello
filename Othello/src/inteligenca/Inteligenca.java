@@ -1,60 +1,61 @@
 package inteligenca;
 
-import logika.Igra;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import logic.Coords;
+import logic.Game;
+import logic.GameStatus;
 import splosno.KdoIgra;
-import splosno.Poteza;
 
-public class Inteligenca extends KdoIgra{
-	/*
-	 * Neinteligentna inteligenca
-	 */
-	
-	protected AI carlos;
-	
-	/* 
-	 **************************************************************************	
-	 *                         CONSTRUCTORS                                   *
-	 **************************************************************************  
-	 */
-	
-	public Inteligenca() {
-		super("Jakob&Peter");
-		// TODO Auto-generated constructor stub
-
-		carlos = new AI(Igra.initialBoard(), 5000);
-	}
-	
-	public Inteligenca(int thinkingTimeMS) {
-		super("Jakob&Peter");
+public class Inteligenca extends KdoIgra {
 		
-		carlos = new AI(Igra.initialBoard(), thinkingTimeMS);
-	}
-	
 	public Inteligenca(String ime) {
 		super(ime);
 		// TODO Auto-generated constructor stub
+	}
+	
+	public Coords getMove(Game g) {
+		return getMCTSMove(g);
+	}
+	
+	private Coords getMCTSMove(Game game) {
+		Tree root = new Tree(game.copy());
 		
-		carlos = new AI(Igra.initialBoard(), 5000);
-	}
-	
-	public Inteligenca(String ime, int thinkingTimeMS) {
-		super(ime);
+		final int THINKING_TIME = 2000;
 		
-		carlos = new AI(Igra.initialBoard(), thinkingTimeMS);
+		long startTime = System.currentTimeMillis();
+		long currTime = startTime;
+		
+		while (currTime < startTime + THINKING_TIME) {
+			root.cycle();
+			currTime = System.currentTimeMillis();
+		}
+		
+		System.out.println(root.getnOfWins() + " / " + root.getnOfSimulations());
+		
+		return root.getBestMove();
 	}
 	
-	/* 
-	 **************************************************************************	
-	 *                            PUBLIC METHODS                              *
-	 **************************************************************************  
-	 */
-	
-	public Poteza izberiPotezo(Igra i) {
-		return carlos.MCTSFindPoteza(i);
+	public static Coords getRandomMove(Game game) {
+		if (game.getStatus() == GameStatus.FINISHED) return null;
+		
+		List<Coords> possibleMoves = new ArrayList<Coords>();
+		
+		for (int x = 0; x < 8; x++) {
+			for (int y = 0; y < 8; y++) {
+				Coords c = new Coords(x,y);
+				if (game.isLegalMove(c, game.getActivePlayer())) {
+					possibleMoves.add(c);
+				}
+			}
+		}
+		
+	    Random rand = new Random();
+	    Coords randomMove = possibleMoves.get(rand.nextInt(possibleMoves.size()));
+	    
+	    
+	    return randomMove;
 	}
-	
-	public Poteza izberiNakljucnoPotezo(Igra i) {
-		return carlos.randomFindPoteza(i);
-	}
-
 }

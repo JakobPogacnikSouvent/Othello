@@ -1,195 +1,241 @@
 package gui;
 
+import javax.swing.JPanel;
 
+import inteligenca.Inteligenca;
+import logic.Coords;
+import logic.Game;
+import logic.GameStatus;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
+import java.awt.event.*;
 
-import javax.swing.JPanel;
 
-import logika.Igra;
-import splosno.Poteza;
-
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") 
 public class Platno extends JPanel implements MouseListener, MouseMotionListener, KeyListener {
+	
+	private Game game;
 
-	protected Igra igra;
+	private Color squareColourPrimary, squareColourSecondary, figureColourWhite, figureBorderWhite, figureColourBlack, figureBorderBlack;
+	private Stroke edgeSize;
 	
-	protected Color barvaIgralecEna;
-	protected Color barvaIgralecDve;
-	protected Color barvaPolje;
-	protected Color barvaPredzadje;
-	protected Color barvaOzadje;
+	private Coords boardZeroVector;
 	
-	protected int pod_not;
-	protected int pod_zun;
-	protected int polje;
-	protected int sirina;
-	protected int korak;
-	protected int xStart;
-	protected int yStart;
-	protected int xst;
-	protected int yst;
-	
-	protected boolean lezece;
-	
-	
-	public Platno(int sirina, int visina) {
-		this.setPreferredSize(new Dimension(sirina, visina));
-		igra = null;
+	private Coords mouseHoverSquare;
+			
+	private int fullWidth, fullHeight, boardSize, squareSize, stoneSize, offset;
 		
-		barvaIgralecEna = Color.BLACK;
-		barvaIgralecDve = Color.WHITE;
-		barvaPolje = Color.GREEN;
-		barvaPredzadje = Color.BLACK;
-		barvaOzadje = new Color(17, 59, 8);
+	private GameWindow parent;
+	
+	public Color getSquareColourPrimary() {
+		return squareColourPrimary;
+	}
+	
+	public void setSquareColourPrimary(Color c) {
+		squareColourPrimary = c;
+	}
+	
+	public static Color defaultSquareColourPrimary() {
+		return new Color(17, 59, 8);
+	}
+	
+	public Color getSquareColourSecondary() {
+		return squareColourSecondary;
+	}
+	
+	public void setSquareColourSecondary(Color c) {
+		squareColourSecondary = c;
+	}
+	
+	public static Color defaultSquareColourSecondary() {
+		return new Color(13, 47, 7);
+	}
+	
+	public Color getFigureColourWhite() {
+		return figureColourWhite;
+	}
+	
+	public void setFigureColourWhite(Color c) {
+		figureColourWhite = c;
+	}
+	
+	public static Color defaultFigureColourWhite() {
+		return Color.WHITE;
+	}
+	
+	public Color getFigureColourBlack() {
+		return figureColourBlack;
+	}
+	
+	public void setFigureColourBlack(Color c) {
+		figureColourBlack = c;
+	}
+	
+	public static Color defaultFigureColourBlack() {
+		return Color.BLACK;
+	}
+	
+	public Platno(int sirina, int visina, GameWindow parent) {
+		super();
+		setPreferredSize(new Dimension(sirina, visina));
+		
+		this.parent = parent;
+		
+		game = null;
+		
+		squareColourPrimary = defaultSquareColourPrimary();
+		squareColourSecondary = defaultSquareColourSecondary();
+		
+		figureColourWhite = defaultFigureColourWhite();
+		figureColourBlack = defaultFigureColourBlack();
+		
+		figureBorderWhite = Color.BLACK;
+		figureBorderBlack = Color.BLACK;
 		
 		
-		setBackground(barvaOzadje);
+		edgeSize = new BasicStroke(1);
+		
+		setBackground(Color.LIGHT_GRAY);
 		
 		addMouseListener(this);
+		addMouseMotionListener(this);
+		addKeyListener(this);
 		setFocusable(true);
+		
 	}
 	
-	
-	private final static double PADDING_ZUNANJI = 0.05;
-	private final static double PADDING_NOTRANJI = 0.01;
-	
-	
-	private boolean lezece() {
-		return getWidth() > getHeight();
+	public void setGame(Game g) {
+		game = g;
+		repaint();
 	}
 	
-	
-	private double sirina() {
-		return Math.min(getWidth(), getHeight());
+	public Game getGame() {
+		return game;
 	}
 	
-	
-	private int sirinaPolja() {
-		double s = sirina();
-		return (int) (s * (1. - (2. * PADDING_ZUNANJI + 9. * PADDING_NOTRANJI)) / 8.);
+	public void setWindowVars() {
+		fullWidth = getWidth();
+		fullHeight = getHeight();
+		boardSize = Math.min(fullWidth, fullHeight);
+		squareSize = boardSize / 8;
+		boardZeroVector = new Coords((Math.max(fullWidth, boardSize) - Math.min(fullWidth, boardSize))/2, (Math.max(fullHeight, boardSize) - Math.min(fullHeight, boardSize))/2);
+		stoneSize = (int) (squareSize * 0.9);
+		offset = (squareSize - stoneSize) / 2;
+
 	}
-	
-	private int podlogaNotranja() {
-		double s = sirina();
-		return (int) (s * (1. - 2. * PADDING_ZUNANJI) * PADDING_NOTRANJI);
-	}
-	
-	private int podlogaZunanja() {
-		double s = sirina();
-		return (int) (s * PADDING_ZUNANJI);
-	}
-	
-	private int sirinaIgre() {
-		int polje = sirinaPolja();
-		int podloga = podlogaNotranja();
-		return 9 * podloga + 8 * polje;
-	}
-	
-	private int getSirina() {
-		return (int) getWidth();
-	}
-	
-	private int getVisina() {
-		return (int) getHeight();
-	}
-	
-	// Da se izognem večjim nepravilnostim, vs porašunam v naprej.
-	private void nastavi() {
-		lezece = lezece();		
-		sirina = sirinaIgre();
-		pod_zun = podlogaZunanja();
-		pod_not = podlogaNotranja();
-		polje = sirinaPolja();
-		korak = polje + pod_not;
-		if (lezece) {
-			xStart = (int) getSirina() / 2 - sirina / 2;
-			yStart = pod_zun;
-		} else {
-			xStart = pod_zun;
-			yStart = (int) getVisina() / 2 - sirina / 2;
-		}
-		xst = xStart + pod_not;
-		yst = yStart + pod_not;
-	}
-	
+
 	@Override
 	protected void paintComponent(Graphics g) {
+		if (game == null) return;
+		
 		super.paintComponent(g);
-		Graphics2D g2 = (Graphics2D)g;
 		
-		nastavi();
+		setWindowVars();
 		
-		// Nariši ploščo
-		g2.setColor(barvaPredzadje);
-		g2.fillRect(xStart, yStart, sirina, sirina);
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setStroke(edgeSize);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
-		// Nariši polja na ploščo
-		g2.setColor(barvaPolje);
-		for (int i = 0; i < 8; ++i) {
-			for (int j = 0; j < 8; ++j) {
-				int iks = xst + i * (korak);
-				int ips = yst + j * (korak);
-				g2.fillRect(iks, ips, polje, polje);
-			}
-		}
-		
-		// Nariši kamenčke
-		if (VodjaIgre.igra != null) {
-			paintStones(g2, VodjaIgre.igra);
-		}
-		
-	}
-	
-	private void paintStones(Graphics2D g2, Igra igra) {
-		byte[][] plosca = igra.getBoard();
-		for (int i = 0; i < 8; ++i) {
-			for (int j = 0; j < 8; ++j) {
-				if (plosca[i][j] != 0) {
-					// System.out.println("Printing stone " + i + " " + j);
-					paintPlayer(g2, j, i, plosca[i][j]);
+		// Paint squares
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {				
+				Coords squareZeroVector = Coords.add(boardZeroVector, new Coords(i * squareSize, j * squareSize));
+												
+				if ((i + j) % 2 != 0) {
+					g2.setColor(squareColourSecondary);										
+				} else {
+					g2.setColor(squareColourPrimary);					
 				}
+				
+				
+				g2.fillRect(squareZeroVector.x, squareZeroVector.y, squareSize, squareSize);
+				
 			}
 		}
+		
+		// Paint stones
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; ++j) {
+				Coords squareZeroVector = Coords.add(boardZeroVector, new Coords(i * squareSize, j * squareSize));
+				
+				Color borderClr = null;
+				Color fillClr = null;
+				
+				switch (game.getBoard().at(i, j).getStoneOnSquare()) {
+				case WHITE:
+					fillClr = figureColourWhite;
+					borderClr = figureBorderWhite;
+					break;
+				case BLACK:
+					fillClr = figureColourBlack;
+					borderClr = figureBorderBlack;
+					break;
+				case EMPTY:
+					if (game.getBoard().at(i, j).getCanPlace(game.getActivePlayer())) {
+						borderClr = figureBorderWhite;
+					}
+				default:
+						;
+				}
+				
+				if (fillClr != null) {
+					g2.setColor(fillClr);
+					g2.fillOval(squareZeroVector.x + offset, squareZeroVector.y + offset, stoneSize, stoneSize);
+				} 
+				if (borderClr != null) {
+					g2.setColor(borderClr);
+					g2.drawOval(squareZeroVector.x + offset, squareZeroVector.y + offset, stoneSize, stoneSize);
+				}
+				
+			}
+		}
+		
+		if (mouseHoverSquare != null && !game.getAiThinking() && game.isLegalMove(mouseHoverSquare, game.getActivePlayer())) {
+			Coords squareZeroVector = Coords.add(boardZeroVector, new Coords(mouseHoverSquare.x * squareSize, mouseHoverSquare.y * squareSize));
+			
+			Color stoneClr = Color.GRAY;
+			
+			switch (game.getActivePlayer()) {
+			case WHITE:
+				stoneClr = figureColourWhite;
+				break;
+			case BLACK:
+				stoneClr = figureColourBlack;
+				break;
+			case EMPTY:
+			default:
+					;
+			}
+			
+			g2.setColor(stoneClr);
+			g2.fillOval(squareZeroVector.x + offset,squareZeroVector.y  + offset, stoneSize, stoneSize);
+		}
+		
 	}
 	
-	private void paintPlayer(Graphics2D g2, int i, int j, int p) {
-		if (p == 1) g2.setColor(barvaIgralecEna);
-		else g2.setColor(barvaIgralecDve);
-		g2.fillOval(xst + i * korak, yst + j * korak, polje, polje);
-	}	
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		int x = e.getX();
-		int y = e.getY();
-		int i = (x - xst) / korak;
-		int j = (y - yst) / korak;
-		VodjaIgre.igrajClovekovoPotezo(new Poteza(j, i));
-	}
-	
-
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
+		if (game == null) return;
 		
+		char key = e.getKeyChar();
+		if (key == 'r' && !game.getAiThinking() && game.getStatus() == GameStatus.ONGOING) {
+			game.odigraj(Inteligenca.getRandomMove(game));
+			parent.update();
+			repaint();
+		}
 	}
-
 
 	@Override
 	public void keyReleased(KeyEvent e) {
@@ -197,34 +243,51 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		
 	}
 
-
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
+//		if (!game.getAiThinking() && game.getStatus() == GameStatus.ONGOING) {
+//			game.odigraj(Inteligenca.getRandomMove(game));
+//		} else if (game.getStatus() == GameStatus.FINISHED){
+//			System.out.println(game.getWinner());
+//		}
+		
+		Coords mouseSquare = Coords.subtract(new Coords(e.getX(), e.getY()), boardZeroVector).divide(squareSize);
+		
+		if (mouseHoverSquare == null || !mouseSquare.equals(mouseHoverSquare)) {
+			mouseHoverSquare = mouseSquare;
+			repaint();
+		}
 		
 	}
 
+	@Override
+	public void mouseClicked(MouseEvent e) {
+
+	}
+	
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		if (!game.getAiThinking()) {			
+			game.odigraj(mouseHoverSquare); // mouseHoverSquare should be same as pressed square
+			
+			parent.update();				
+//			if (game.getStatus() == GameStatus.ONGOING) {
+//			}
+			repaint();
+		}
 	}
-
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
+
 		
 	}
-
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
@@ -232,11 +295,11 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		
 	}
 
-
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	
 }
