@@ -41,6 +41,9 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		squareColourPrimary = c;
 	}
 	
+	public static Color defaultSquareColourPrimary() {
+		return new Color(17, 59, 8);
+	}
 	
 	public Color getSquareColourSecondary() {
 		return squareColourSecondary;
@@ -48,6 +51,10 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 	
 	public void setSquareColourSecondary(Color c) {
 		squareColourSecondary = c;
+	}
+	
+	public static Color defaultSquareColourSecondary() {
+		return new Color(13, 47, 7);
 	}
 	
 	public Color getFigureColourWhite() {
@@ -58,12 +65,20 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		figureColourWhite = c;
 	}
 	
+	public static Color defaultFigureColourWhite() {
+		return Color.WHITE;
+	}
+	
 	public Color getFigureColourBlack() {
 		return figureColourBlack;
 	}
 	
 	public void setFigureColourBlack(Color c) {
 		figureColourBlack = c;
+	}
+	
+	public static Color defaultFigureColourBlack() {
+		return Color.BLACK;
 	}
 	
 	public Platno(int sirina, int visina, GameWindow parent) {
@@ -74,14 +89,14 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		
 		game = null;
 		
-		squareColourPrimary = new Color(17, 59, 8);
-		squareColourSecondary = new Color(13, 47, 7);
+		squareColourPrimary = defaultSquareColourPrimary();
+		squareColourSecondary = defaultSquareColourSecondary();
 		
-		figureColourWhite = Color.WHITE;
-		figureColourBlack = Color.BLACK;
+		figureColourWhite = defaultFigureColourWhite();
+		figureColourBlack = defaultFigureColourBlack();
 		
 		figureBorderWhite = Color.BLACK;
-		figureBorderBlack = Color.WHITE;
+		figureBorderBlack = Color.BLACK;
 		
 		
 		edgeSize = new BasicStroke(1);
@@ -183,8 +198,22 @@ public class Platno extends JPanel implements MouseListener, MouseMotionListener
 		
 		if (mouseHoverSquare != null && !game.getAiThinking() && game.isLegalMove(mouseHoverSquare, game.getActivePlayer())) {
 			Coords squareZeroVector = Coords.add(boardZeroVector, new Coords(mouseHoverSquare.x * squareSize, mouseHoverSquare.y * squareSize));
-
-			g2.setColor(Color.blue);
+			
+			Color stoneClr = Color.GRAY;
+			
+			switch (game.getActivePlayer()) {
+			case WHITE:
+				stoneClr = figureColourWhite;
+				break;
+			case BLACK:
+				stoneClr = figureColourBlack;
+				break;
+			case EMPTY:
+			default:
+					;
+			}
+			
+			g2.setColor(stoneClr);
 			g2.fillOval(squareZeroVector.x + offset,squareZeroVector.y  + offset, stoneSize, stoneSize);
 		}
 		

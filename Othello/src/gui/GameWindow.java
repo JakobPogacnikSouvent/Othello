@@ -11,13 +11,7 @@ import java.awt.Color;
 import java.awt.event.*;
 
 @SuppressWarnings("serial")
-public class GameWindow extends JFrame implements ActionListener {
-	
-	// TODO: ⬤ colored symbol in addition to WHITE and BLACK
-	// TODO: option menu
-	// TODO: comments
-	// TODO: better title screen
-	
+public class GameWindow extends JFrame implements ActionListener {	
 	private JLabel rez;
 	
 	protected Platno platno;
@@ -30,12 +24,16 @@ public class GameWindow extends JFrame implements ActionListener {
 	Timer timer;
 	
 	public void changeScore(int scoreWhite, int scoreBlack) {
-		rez.setText("WHITE " + scoreWhite + " || " + scoreBlack + " BLACK");
+		Color whiteClr = platno.getFigureColourWhite();
+		Color blackClr = platno.getFigureColourBlack();
+		
+		rez.setText("<html><font color='rgb(" + whiteClr.getRed() + ", " + whiteClr.getGreen() + ", " + whiteClr.getBlue() + ")'>⬤</font> " + scoreWhite +
+				" || " + scoreBlack + " <font color='rgb(" + blackClr.getRed() + ", " + blackClr.getGreen() + ", " + blackClr.getBlue() + ")'>⬤</font></html>");
 	}
 	
 	public GameWindow(Inteligenca ai, Stone aiColour) {
 		super();
-		setTitle("Othello 1.2");
+		setTitle("Othello 1.3");
 		
 		// Ureditev orodne vrstice
 		JMenuBar menubar = new JMenuBar();
@@ -100,20 +98,39 @@ public class GameWindow extends JFrame implements ActionListener {
 		
 		changeScore(whiteScore, blackScore);
 		
-		status.setText(platno.getGame().getActivePlayer() + " to play");
-	
+		Color activeColor = null;
+				
+		switch (platno.getGame().getActivePlayer()) {
+		case WHITE:
+			activeColor = platno.getFigureColourWhite();
+			break;
+		case BLACK:
+			activeColor = platno.getFigureColourBlack();
+			break;
+		case EMPTY:
+		default:
+			break;
+		}
+		
+		status.setText("<html><font color='rgb(" + activeColor.getRed() + ", " + activeColor.getGreen() + ", " + activeColor.getBlue() + ")'>⬤</font> to move</html>");
+		
+		
 		if (platno.getGame().getStatus() == GameStatus.FINISHED) {
 	    	timer.stop();
 			
 			String[] options = new String[] {"Play again!", "Main menu!", "Exit"};
 		    
 			String winningText = "";
+			Color winClr = null;
+			
 			switch (platno.getGame().getWinner()) {
 			case WHITE:
-				winningText = "Final score is: " + whiteScore + " to " + blackScore + "\nWHITE wins!";
+				winClr = platno.getFigureColourWhite();
+				winningText = "<html>Final score is: " + whiteScore + " to " + blackScore + " <font color='rgb(" + winClr.getRed() + ", " + winClr.getGreen() + ", " + winClr.getBlue() + ")'>⬤</font> wins!</html>";
 				break;
 			case BLACK:
-				winningText = "Final score is: " + whiteScore + " to " + blackScore + "\nBLACK wins!";
+				winClr = platno.getFigureColourBlack();
+				winningText = "<html>Final score is: " + whiteScore + " to " + blackScore + " <font color='rgb(" + winClr.getRed() + ", " + winClr.getGreen() + ", " + winClr.getBlue() + ")'>⬤</font> wins!</html>";
 				break;
 			case EMPTY:
 				winningText = "Final score is: " + whiteScore + " to " + blackScore + "\nGame ended in a TIE!";
@@ -160,21 +177,47 @@ public class GameWindow extends JFrame implements ActionListener {
 		} else if (source == menuBarvaIgralecEna) {
 			Color izbira = JColorChooser.showDialog(this, "Barva kamenčkov prvega igralca", platno.getFigureColourBlack());
 			if (izbira == null) return;
-			platno.setFigureColourBlack(izbira);
-			platno.repaint();
+			setFigureColourBlack(izbira);
 		} else if (source == menuBarvaIgralecDve) {
 			Color izbira = JColorChooser.showDialog(this, "Barva kamenčkov drugega igralca", platno.getFigureColourWhite());
 			if (izbira == null) return;
-			platno.setFigureColourWhite(izbira);
-			platno.repaint();
+			setFigureColourWhite(izbira);
 		} else if (source == menuBarvaPolja) {
 			Color izbira = JColorChooser.showDialog(this, "Barva igralnih polj", platno.getSquareColourPrimary());
 			if (izbira == null) return;
-			platno.setSquareColourPrimary(izbira);
+			setSquareColourPrimary(izbira);
 			Color darker = izbira.darker();
-			platno.setSquareColourSecondary(darker);
-			platno.repaint();
+			setSquareColourSecondary(darker);
 		}
+	}
+
+	private void setSquareColourSecondary(Color darker) {
+		platno.setSquareColourSecondary(darker);
+		platno.repaint();
+	}
+
+	private void setSquareColourPrimary(Color izbira) {
+		platno.setSquareColourPrimary(izbira);
+		platno.repaint();		
+	}
+
+	private void setFigureColourWhite(Color izbira) {
+		platno.setFigureColourWhite(izbira);
+		platno.repaint();		
+	}
+
+	public void setFigureColourBlack(Color izbira) {
+		platno.setFigureColourBlack(izbira);
+		platno.repaint();		
+	}
+
+	public void setColours(Color figureColourBlack, Color figureColourWhite, Color squareColourPrimary, Color squareColourSecondary) {
+		setFigureColourBlack(figureColourBlack);
+		setFigureColourWhite(figureColourWhite);
+		setSquareColourPrimary(squareColourPrimary);
+		setSquareColourSecondary(squareColourSecondary);
+		
+		
 	}
 	
 }

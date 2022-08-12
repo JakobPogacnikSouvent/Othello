@@ -1,6 +1,9 @@
 package gui;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -9,6 +12,7 @@ import java.awt.event.WindowListener;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
@@ -19,17 +23,40 @@ import logic.Stone;
 @SuppressWarnings("serial")
 public class StartScreen extends JFrame implements ActionListener, WindowListener{
 
-	JButton playAgainstCPU, playAgainstPlayer, exit;
+	JButton playAgainstCPU, playAgainstPlayer, exit, settings;
 	GameWindow gameWindow;
+	SettingsWindow settingsWindow;
+	
+	JLabel title;
+	
+	public Color figureColourBlack, figureColourWhite, squareColourPrimary, squareColourSecondary;
 	
 	public StartScreen() {
 		super();
-		setTitle("Othello 1.2");
+		setTitle("Othello 1.3");
 		
-		// Glavna ploÅ¡Ä�a
-		JPanel glavnaPlosca = new JPanel();
-		glavnaPlosca.setLayout(new BoxLayout(glavnaPlosca, BoxLayout.Y_AXIS));
-		this.add(glavnaPlosca);
+		figureColourBlack = Platno.defaultFigureColourBlack();
+		figureColourWhite = Platno.defaultFigureColourWhite();
+		squareColourPrimary = Platno.defaultSquareColourPrimary();
+		squareColourSecondary = Platno.defaultSquareColourSecondary();
+		
+		JPanel glavnejsaPlosca = new JPanel();
+		glavnejsaPlosca.setLayout(new BoxLayout(glavnejsaPlosca, BoxLayout.Y_AXIS));
+		this.add(glavnejsaPlosca);
+		
+		// Glavna plošča
+		JPanel glavnaPlosca1 = new JPanel();
+		glavnaPlosca1.setLayout(new GridBagLayout());
+		glavnejsaPlosca.add(glavnaPlosca1);
+		
+		title = new JLabel("Othello");
+		title.setFont(new Font(title.getName(), Font.PLAIN, 100));
+		glavnaPlosca1.add(title);
+		
+		// Glavna plošča
+		JPanel glavnaPlosca2 = new JPanel();
+		glavnaPlosca2.setLayout(new BoxLayout(glavnaPlosca2, BoxLayout.Y_AXIS));
+		glavnejsaPlosca.add(glavnaPlosca2);
 		
 		JPanel orodjarna = new JPanel();
 		orodjarna.setLayout(new FlowLayout());
@@ -42,46 +69,27 @@ public class StartScreen extends JFrame implements ActionListener, WindowListene
 		playAgainstPlayer.addActionListener(this);
 		orodjarna.add(playAgainstPlayer);
 		
+		settings = new JButton("Settings");
+		settings.addActionListener(this);
+		orodjarna.add(settings);
+		
 		exit = new JButton("Exit");
 		exit.addActionListener(this);
 		orodjarna.add(exit);
 		
-		glavnaPlosca.add(orodjarna);
+		glavnaPlosca2.add(orodjarna);
 		
-		
-		
-//		JMenuBar menubar = new JMenuBar();
-//		setJMenuBar(menubar);
-//		
-//		JMenu menuDatoteka = dodajMenu(menubar, "Datoteka");
-//		JMenu menuGraf = dodajMenu(menubar, "Graf");
-//		JMenu menuNastavitve = dodajMenu(menubar, "Nastavitve");
-//		
-//		menuOdpri = dodajMenuItem(menuDatoteka, "Odpri ...");
-//		menuShrani = dodajMenuItem(menuDatoteka, "Shrani ...");
-//		menuKoncaj = dodajMenuItem(menuDatoteka, "KonÄ�aj");
-//		menuPrazen = dodajMenuItem(menuGraf, "Prazen ...");
-//		menuCikel = dodajMenuItem(menuGraf, "Cikel ...");
-//		menuPoln = dodajMenuItem(menuGraf, "Poln ...");
-//		menuPolnDvodelen = dodajMenuItem(menuGraf, "Poln dvodelen ...");
-//		menuBarvaPovezave = dodajMenuItem(menuNastavitve, "Barva povezave ...");
-//		menuBarvaTocke = dodajMenuItem(menuNastavitve, "Barva toÄ�ke ...");
-//		menuBarvaAktivneTocke = dodajMenuItem(menuNastavitve, "Barva aktivne toÄ�ke ...");
-//		menuBarvaIzbraneTocke = dodajMenuItem(menuNastavitve, "Barva izbrane toÄ�ke ...");
-//		menuBarvaRoba = dodajMenuItem(menuNastavitve, "Barva roba ...");
-//		menuDebelinaRoba = dodajMenuItem(menuNastavitve, "Debelina roba ...");
-//		menuDebelinaPovezave = dodajMenuItem(menuNastavitve, "Debelina povezave ...");
-//		
-//		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-		if (e.getSource() == playAgainstPlayer) {
+		Object source = e.getSource();
+
+		if (source == playAgainstPlayer) {
 			gameWindow = new GameWindow(null, null);
+			gameWindow.setColours(figureColourBlack, figureColourWhite, squareColourPrimary, squareColourSecondary);			
+			
 			gameWindow.pack();
 			gameWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			gameWindow.setLocationRelativeTo(null);
@@ -89,7 +97,7 @@ public class StartScreen extends JFrame implements ActionListener, WindowListene
 			gameWindow.setVisible(true);
 			
 			this.setVisible(false);
-		} else if (e.getSource() == playAgainstCPU) {
+		} else if (source == playAgainstCPU) {
 			
 			Stone aiColour = null;
 			String[] options = new String[] {"Black", "White"};
@@ -107,6 +115,9 @@ public class StartScreen extends JFrame implements ActionListener, WindowListene
 
 			
 			gameWindow = new GameWindow(new Inteligenca("Carlos"), aiColour);
+			gameWindow.setColours(figureColourBlack, figureColourWhite, squareColourPrimary, squareColourSecondary);
+
+			
 			gameWindow.pack();
 			gameWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			gameWindow.setLocationRelativeTo(null);
@@ -114,7 +125,16 @@ public class StartScreen extends JFrame implements ActionListener, WindowListene
 			gameWindow.setVisible(true);
 			
 			this.setVisible(false);
-		} else if (e.getSource() == exit) {
+		} else if (source == settings) {
+			settingsWindow = new SettingsWindow(this);
+			settingsWindow.pack();
+			settingsWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			settingsWindow.setLocationRelativeTo(null);
+			settingsWindow.addWindowListener(this);
+			settingsWindow.setVisible(true);
+			
+			this.setVisible(false);
+		} else if (source == exit) {
 			System.exit(0);
 		}
 		
@@ -137,8 +157,9 @@ public class StartScreen extends JFrame implements ActionListener, WindowListene
 
 	@Override
 	public void windowClosed(WindowEvent e) {
-		// TODO Auto-generated method stub
-		if (e.getSource() == gameWindow) {
+		Object source = e.getSource();
+		
+		if (source == gameWindow || source == settingsWindow) {
 			this.setVisible(true);			
 		}
 		
